@@ -1,10 +1,8 @@
 import React, { useState, useEffect } from "react";
-import { FaRegEdit } from "react-icons/fa";
-import { FiEdit } from "react-icons/fi";
 import { MdDelete, MdEdit } from "react-icons/md";
 
 function TodoApp() {
-  //  Load once during initialization (prevents overwriting with [])
+  // Load once during initialization (prevents overwriting with [])
   const [tasks, setTasks] = useState(() => {
     if (typeof window === "undefined") return [];
     try {
@@ -21,7 +19,7 @@ function TodoApp() {
   const [currentId, setCurrentId] = useState(null);
   const [filter, setFilter] = useState("all"); // all | done | todo
 
-  //  Persist whenever tasks change
+  // Persist whenever tasks change
   useEffect(() => {
     try {
       localStorage.setItem("tasks", JSON.stringify(tasks));
@@ -36,7 +34,7 @@ function TodoApp() {
 
     if (isEditing) {
       setTasks((prev) =>
-        prev.map((t) => (t.id === currentId ? { ...t, text } : t))
+        prev.map((todo) => (todo.id === currentId ? { ...todo, text } : todo))
       );
       setIsEditing(false);
       setCurrentId(null);
@@ -47,7 +45,7 @@ function TodoApp() {
   };
 
   const deleteTask = (id) => {
-    setTasks((prev) => prev.filter((t) => t.id !== id));
+    setTasks((prev) => prev.filter((todo) => todo.id !== id));
     if (currentId === id) {
       setIsEditing(false);
       setCurrentId(null);
@@ -63,24 +61,26 @@ function TodoApp() {
 
   const toggleTask = (id) => {
     setTasks((prev) =>
-      prev.map((t) => (t.id === id ? { ...t, completed: !t.completed } : t))
+      prev.map((todo) =>
+        todo.id === id ? { ...todo, completed: !todo.completed } : todo
+      )
     );
   };
 
   const deleteCompleted = () => {
-    setTasks((prev) => prev.filter((t) => !t.completed));
+    setTasks((prev) => prev.filter((todo) => !todo.completed));
   };
 
   const deleteAll = () => setTasks([]);
 
-  const filteredTasks = tasks.filter((t) => {
-    if (filter === "done") return t.completed;
-    if (filter === "todo") return !t.completed;
+  const filteredTasks = tasks.filter((todo) => {
+    if (filter === "done") return todo.completed;
+    if (filter === "todo") return !todo.completed;
     return true;
   });
 
   return (
-    <div className="min-h-screen  flex items-center justify-center p-4">
+    <div className="min-h-screen flex items-center justify-center p-4">
       <div className="w-full max-w-2xl bg-white rounded-xl shadow-lg p-6">
         {/* Input */}
         <h2 className="text-xl font-semibold text-center mb-4">Todo App</h2>
@@ -101,7 +101,7 @@ function TodoApp() {
         </div>
 
         {/* Filters */}
-        <h2 className="text-xl font-semibold text-center mb-4">TodoList</h2>
+        <h2 className="text-xl font-semibold text-center mb-4">Todo List</h2>
         <div className="flex flex-wrap justify-center gap-4 mb-6">
           <button
             onClick={() => setFilter("all")}
@@ -140,38 +140,38 @@ function TodoApp() {
           {filteredTasks.length === 0 && (
             <p className="text-gray-500 text-center">No tasks found</p>
           )}
-          {filteredTasks.map((task) => (
+          {filteredTasks.map((todo) => (
             <li
-              key={task.id}
+              key={todo.id}
               className="flex items-center justify-between bg-gray-50 border rounded-lg px-4 py-3"
             >
               <div className="flex items-center gap-3">
                 <input
                   type="checkbox"
-                  checked={!!task.completed}
-                  onChange={() => toggleTask(task.id)}
+                  checked={!!todo.completed}
+                  onChange={() => toggleTask(todo.id)}
                   className="h-5 w-5 text-cyan-600 rounded"
                 />
                 <span
                   className={`${
-                    task.completed
+                    todo.completed
                       ? "line-through text-red-500"
                       : "text-gray-800"
                   }`}
                 >
-                  {task.text}
+                  {todo.text}
                 </span>
               </div>
               <div className="flex items-center gap-3 text-lg">
                 <button
-                  onClick={() => editTask(task.id, task.text)}
+                  onClick={() => editTask(todo.id, todo.text)}
                   className="text-blue-500 hover:text-yellow-700 cursor-pointer"
                   title="Edit"
                 >
                   <MdEdit />
                 </button>
                 <button
-                  onClick={() => deleteTask(task.id)}
+                  onClick={() => deleteTask(todo.id)}
                   className="text-red-600 hover:text-red-700 cursor-pointer"
                   title="Delete"
                 >
@@ -186,7 +186,7 @@ function TodoApp() {
         <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 mt-6">
           <button
             onClick={deleteCompleted}
-            disabled={!tasks.some((t) => t.completed)}
+            disabled={!tasks.some((todo) => todo.completed)}
             className="bg-red-500 text-white px-4 py-2 rounded-lg hover:bg-red-600 transition disabled:bg-gray-300 cursor-pointer"
           >
             Delete done tasks
